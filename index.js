@@ -31,6 +31,9 @@ async function run() {
     console.log("✅ Connected to MongoDB");
 
     const jobsCollection = client.db("alvinmonir411").collection("myjobs");
+    const applicantcollections = client
+      .db("alvinmonir411")
+      .collection("applicant");
 
     app.get("/jobs", async (req, res) => {
       try {
@@ -42,7 +45,19 @@ async function run() {
         res.status(500).send({ message: "Internal Server Error" });
       }
     });
-
+    app.post("/applicantCollection", async (req, res) => {
+      const applicanttion = req.body;
+      const result = await applicantcollections.insertOne(applicanttion);
+      res.send(result);
+    });
+    app.get("/applicant", async (req, res) => {
+      const email = req.query.email;
+      const query = {
+        email: email,
+      };
+      const result = await applicantcollections.find(query).toArray();
+      res.send(result);
+    });
     app.get("/jobs/:id", async (req, res) => {
       const id = req.params.id;
       const result = await jobsCollection.findOne({ _id: new ObjectId(id) });
